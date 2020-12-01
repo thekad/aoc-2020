@@ -3,7 +3,9 @@ name = "aoc-2020"
 version = "0.1.0"
 authors = ["Jorge Gallegos <kad@blegh.net>"]
 edition = "2018"
+#include = ["src/**/*", "Cargo.toml", "data/*"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+structopt = "0.3.13"
