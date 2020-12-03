@@ -1,4 +1,6 @@
+mod io;
 mod one;
+mod two;
 use std::num::ParseIntError;
 use std::path::PathBuf;
 use structopt::StructOpt;
@@ -7,11 +9,18 @@ use structopt::StructOpt;
 #[derive(StructOpt, Debug)]
 #[structopt(about = "Advent of Code 2020")]
 enum App {
-    #[structopt(about = "Runs the first exercise")]
+    #[structopt(about = "Runs the first day's exercise(s)")]
     One {
         #[structopt(parse(from_os_str))]
-        #[structopt(default_value = "report.txt")]
+        #[structopt(default_value = "data/expense-report.txt")]
         #[structopt(help = "Path to the expense report")]
+        path: PathBuf,
+    },
+    #[structopt(about = "Runs the first second's exercise(s)")]
+    Two {
+        #[structopt(parse(from_os_str))]
+        #[structopt(default_value = "data/password-policies.txt")]
+        #[structopt(help = "Path to the file containing the passwords and passwords")]
         path: PathBuf,
     },
 }
@@ -20,5 +29,6 @@ fn main() -> Result<(), ParseIntError> {
     let args = App::from_args();
     return match args {
         App::One { path } => one::cmd(path),
+        App::Two { path } => two::cmd(path),
     };
 }
