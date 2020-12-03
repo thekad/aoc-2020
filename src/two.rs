@@ -4,7 +4,7 @@ use std::num::ParseIntError;
 use std::path::PathBuf;
 
 #[derive(Debug)]
-struct PasswordPol {
+struct PasswordPol1 {
     min: i32,
     max: i32,
     chr: String,
@@ -13,10 +13,19 @@ struct PasswordPol {
     ok: bool,
 }
 
+#[derive(Debug)]
+struct PasswordPol2 {
+    pos1: i32,
+    pos2: i32,
+    chr: String,
+    txt: String,
+    ok: bool,
+}
+
 pub fn cmd(path: PathBuf) -> Result<(), ParseIntError> {
     let re = Regex::new(r#"(\d+)\-(\d+)\s(\w):\s(\w+)"#).unwrap();
-    let mut valid_ppols: Vec<PasswordPol> = Vec::new();
-    let mut invalid_ppols: Vec<PasswordPol> = Vec::new();
+    let mut first_ppols: Vec<PasswordPol1> = Vec::new();
+    let mut second_ppols: Vec<PasswordPol2> = Vec::new();
     if let Ok(lines) = io::read_lines(path) {
         for line in lines {
             if let Ok(line) = line {
@@ -24,50 +33,44 @@ pub fn cmd(path: PathBuf) -> Result<(), ParseIntError> {
                     let min = String::from(&cap[1]).parse().unwrap();
                     let max = String::from(&cap[2]).parse().unwrap();
                     let chr = String::from(&cap[3]);
+                    let chr2 = String::from(&cap[3]);
                     let txt = String::from(&cap[4]);
+                    let txt2 = String::from(&cap[4]);
+                    let txtv = txt2.split("").collect::<Vec<&str>>();
                     let cnt = txt.matches(&cap[3]).count() as i32;
-                    let ok = cnt >= min && cnt <= max;
+                    let ok_count = cnt >= min && cnt <= max;
+                    let ok_xor = (txtv[min as usize] == chr) ^ (txtv[max as usize] == chr);
 
-                    let ppol = PasswordPol {
+                    let ppol1 = PasswordPol1 {
                         min,
                         max,
                         chr,
                         txt,
                         cnt,
-                        ok,
+                        ok: ok_count,
                     };
-                    if ok {
-                        valid_ppols.push(ppol);
-                    } else {
-                        println!("{:?}", ppol);
-                        invalid_ppols.push(ppol);
+                    let ppol2 = PasswordPol2 {
+                        pos1: min,
+                        pos2: max,
+                        chr: chr2,
+                        txt: txt2,
+                        ok: ok_xor,
+                    };
+                    if ok_count {
+                        first_ppols.push(ppol1);
+                    }
+                    if ok_xor {
+                        second_ppols.push(ppol2);
                     }
                 }
             }
         }
     }
     println!(
-        "Valid: {} Invalid: {}",
-        valid_ppols.len(),
-        invalid_ppols.len()
+        "First policy: {} Second policy: {}",
+        first_ppols.len(),
+        second_ppols.len()
     );
 
     Ok(())
 }
-
-/*
-fn read_password_policies(path: std::path::PathBuf) -> Vec<i32> {
-    let mut numbers: Vec<i32> = Vec::new();
-    if let Ok(lines) = io::read_lines(path) {
-        for line in lines {
-            if let Ok(line) = line {
-                if let Ok(num) = line.parse() {
-                    numbers.push(num);
-                }
-            }
-        }
-    }
-
-    return numbers;
-}
-*/
