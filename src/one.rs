@@ -1,7 +1,6 @@
-use std::fs::File;
-use std::io::{self, BufRead};
+use crate::io;
 use std::num::ParseIntError;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 #[derive(Debug, Clone)]
 struct Numbers {
@@ -61,7 +60,7 @@ pub fn cmd(path: PathBuf) -> Result<(), ParseIntError> {
 
 fn read_numbers(path: std::path::PathBuf) -> Vec<i32> {
     let mut numbers: Vec<i32> = Vec::new();
-    if let Ok(lines) = read_lines(path) {
+    if let Ok(lines) = io::read_lines(path) {
         for line in lines {
             if let Ok(line) = line {
                 if let Ok(num) = line.parse() {
@@ -72,12 +71,4 @@ fn read_numbers(path: std::path::PathBuf) -> Vec<i32> {
     }
 
     return numbers;
-}
-
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where
-    P: AsRef<Path>,
-{
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
 }
