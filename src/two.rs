@@ -1,4 +1,3 @@
-use crate::io;
 use regex::Regex;
 use std::num::ParseIntError;
 use std::path::PathBuf;
@@ -26,7 +25,7 @@ pub fn cmd(path: PathBuf) -> Result<(), ParseIntError> {
     let re = Regex::new(r#"(\d+)\-(\d+)\s(\w):\s(\w+)"#).unwrap();
     let mut first_ppols: Vec<PasswordPol1> = Vec::new();
     let mut second_ppols: Vec<PasswordPol2> = Vec::new();
-    if let Ok(lines) = io::read_lines(path) {
+    if let Ok(lines) = crate::io::read_lines(path) {
         for line in lines {
             if let Ok(line) = line {
                 for cap in re.captures_iter(&line) {

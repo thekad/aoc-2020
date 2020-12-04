@@ -1,4 +1,3 @@
-use crate::io;
 use std::num::ParseIntError;
 use std::path::PathBuf;
 
@@ -60,7 +59,7 @@ pub fn cmd(path: PathBuf) -> Result<(), ParseIntError> {
 
 fn read_numbers(path: std::path::PathBuf) -> Vec<i32> {
     let mut numbers: Vec<i32> = Vec::new();
-    if let Ok(lines) = io::read_lines(path) {
+    if let Ok(lines) = crate::io::read_lines(path) {
         for line in lines {
             if let Ok(line) = line {
                 if let Ok(num) = line.parse() {

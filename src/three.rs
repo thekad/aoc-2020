@@ -1,9 +1,8 @@
-use crate::io;
 use std::num::ParseIntError;
 use std::path::PathBuf;
 
 pub fn cmd(path: PathBuf) -> Result<(), ParseIntError> {
-    if let Ok(lines) = io::lines(path) {
+    if let Ok(lines) = crate::io::lines(path) {
         println!(
             "all slopes multiplied: {}",
             ski(1, 1, &lines)
