@@ -12,7 +12,6 @@ where
 }
 
 // this returns a vector of strings
-#[allow(dead_code)]
 pub fn lines(filename: impl AsRef<Path>) -> io::Result<Vec<String>> {
     let file = File::open(filename).expect("no such file");
     let buf = BufReader::new(file);
