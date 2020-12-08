@@ -2,13 +2,13 @@ mod five;
 mod four;
 mod io;
 mod one;
+mod six;
 mod three;
 mod two;
 use std::num::ParseIntError;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
-/// Search for a pattern in a file and display the lines that contain it.
 #[derive(StructOpt, Debug)]
 #[structopt(about = "Advent of Code 2020")]
 enum App {
@@ -47,6 +47,13 @@ enum App {
         #[structopt(help = "Path to the file containing flight seat assignments")]
         path: PathBuf,
     },
+    #[structopt(about = "Runs the sixth day's exercise(s)")]
+    Six {
+        #[structopt(parse(from_os_str))]
+        #[structopt(default_value = "data/customs-declaration.txt")]
+        #[structopt(help = "Path to the file containing custom declaration form answers")]
+        path: PathBuf,
+    },
 }
 
 fn main() -> Result<(), ParseIntError> {
@@ -57,5 +64,6 @@ fn main() -> Result<(), ParseIntError> {
         App::Three { path } => three::cmd(path),
         App::Four { path } => four::cmd(path),
         App::Five { path } => five::cmd(path),
+        App::Six { path } => six::cmd(path),
     };
 }
