@@ -1,12 +1,13 @@
+use std::collections::HashSet;
 use std::num::ParseIntError;
 use std::path::PathBuf;
 
 pub fn cmd(path: PathBuf) -> Result<(), ParseIntError> {
-    let mut seats: Vec<i32> = vec![];
+    let mut seats: HashSet<i32> = HashSet::new();
 
     if let Ok(lines) = crate::io::read_lines(path) {
         for line in lines {
-            seats.push(
+            seats.insert(
                 i32::from_str_radix(
                     line.unwrap()
                         .replace("F", "0")
@@ -20,7 +21,19 @@ pub fn cmd(path: PathBuf) -> Result<(), ParseIntError> {
             );
         }
     }
-    println!("Max seat: {:?}", seats.iter().max());
+    let min = seats.iter().min().unwrap();
+    let max = seats.iter().max().unwrap();
+    let r = std::ops::Range {
+        start: *min,
+        end: *max,
+    };
+
+    println!("Max seat: {}", max);
+    for i in r {
+        if !seats.contains(&i) {
+            println!("My seat: {}", i);
+        }
+    }
 
     Ok(())
 }
