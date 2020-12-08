@@ -32,6 +32,7 @@ pub fn cmd(path: PathBuf) -> Result<(), ParseIntError> {
     for i in r {
         if !seats.contains(&i) {
             println!("My seat: {}", i);
+            break;
         }
     }
 
