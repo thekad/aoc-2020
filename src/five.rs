@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::iter::FromIterator;
 use std::num::ParseIntError;
 use std::path::PathBuf;
 
@@ -28,13 +29,9 @@ pub fn cmd(path: PathBuf) -> Result<(), ParseIntError> {
         end: *max,
     };
 
+    let full: HashSet<i32> = HashSet::from_iter(r);
     println!("Max seat: {}", max);
-    for i in r {
-        if !seats.contains(&i) {
-            println!("My seat: {}", i);
-            break;
-        }
-    }
+    println!("My seat must be: {:?}", full.difference(&seats));
 
     Ok(())
 }

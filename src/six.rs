@@ -7,9 +7,9 @@ use std::path::PathBuf;
 pub fn cmd(path: PathBuf) -> Result<(), ParseIntError> {
     let mut groups: Vec<usize> = Vec::new();
     if let Ok(input) = fs::read_to_string(path) {
-        for data in input.split("\n\n") {
+        for group in input.split("\n\n") {
             let chars: HashSet<char> =
-                HashSet::from_iter(data.replace("\n", "").replace(" ", "").chars());
+                HashSet::from_iter(group.replace("\n", "").replace(" ", "").chars());
             groups.push(chars.len())
         }
     }
