@@ -2,6 +2,7 @@ mod five;
 mod four;
 mod io;
 mod one;
+mod seven;
 mod six;
 mod three;
 mod two;
@@ -54,6 +55,13 @@ enum App {
         #[structopt(help = "Path to the file containing custom declaration form answers")]
         path: PathBuf,
     },
+    #[structopt(about = "Runs the seventh day's exercise(s)")]
+    Seven {
+        #[structopt(parse(from_os_str))]
+        #[structopt(default_value = "data/luggage-policies.txt")]
+        #[structopt(help = "Path to the file containing airport luggage policies")]
+        path: PathBuf,
+    },
 }
 
 fn main() -> Result<(), ParseIntError> {
@@ -65,5 +73,6 @@ fn main() -> Result<(), ParseIntError> {
         App::Four { path } => four::cmd(path),
         App::Five { path } => five::cmd(path),
         App::Six { path } => six::cmd(path),
+        App::Seven { path } => seven::cmd(path),
     };
 }
