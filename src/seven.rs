@@ -5,7 +5,6 @@ use std::num::ParseIntError;
 use std::path::PathBuf;
 use std::str::FromStr;
 
-#[allow(dead_code)]
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 struct Bag {
     color: String,
