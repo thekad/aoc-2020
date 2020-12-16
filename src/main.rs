@@ -1,3 +1,4 @@
+mod eight;
 mod five;
 mod four;
 mod io;
@@ -62,6 +63,13 @@ enum App {
         #[structopt(help = "Path to the file containing airport luggage policies")]
         path: PathBuf,
     },
+    #[structopt(about = "Runs the eighth day's exercise(s)")]
+    Eight {
+        #[structopt(parse(from_os_str))]
+        #[structopt(default_value = "data/game-debug.txt")]
+        #[structopt(help = "Path to the file containing game device debug info")]
+        path: PathBuf,
+    },
 }
 
 fn main() -> Result<(), ParseIntError> {
@@ -74,5 +82,6 @@ fn main() -> Result<(), ParseIntError> {
         App::Five { path } => five::cmd(path),
         App::Six { path } => six::cmd(path),
         App::Seven { path } => seven::cmd(path),
+        App::Eight { path } => eight::cmd(path),
     };
 }
