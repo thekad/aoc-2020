@@ -8,7 +8,7 @@ pub fn cmd(path: PathBuf) -> Result<(), ParseIntError> {
         // we expect this to fail
         let _ = compile(&lines);
         // get all the possible jmps and nops
-        let suspects = get_instructions(&lines, vec![String::from("jmp"), String::from("nop")]);
+        let suspects = get_instructions(&lines, vec!["jmp", "nop"]);
         for (num, instr) in suspects {
             let orig = instr.to_string();
             let flipped = flip(orig.to_string());
@@ -26,12 +26,12 @@ pub fn cmd(path: PathBuf) -> Result<(), ParseIntError> {
     Ok(())
 }
 
-fn get_instructions(lines: &Vec<String>, matches: Vec<String>) -> HashMap<usize, String> {
+fn get_instructions(lines: &Vec<String>, matches: Vec<&str>) -> HashMap<usize, String> {
     let mut results: HashMap<usize, String> = HashMap::new();
 
     for (num, line) in lines.iter().enumerate() {
-        let instr = line.chars().take(3).collect::<String>();
-        if matches.contains(&instr) {
+        let (instr, _) = split(line.to_string());
+        if matches.contains(&instr.as_str()) {
             results.insert(num, line.to_string());
         }
     }
