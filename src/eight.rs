@@ -1,41 +1,97 @@
+use std::collections::HashMap;
 use std::num::ParseIntError;
 use std::path::PathBuf;
 
 pub fn cmd(path: PathBuf) -> Result<(), ParseIntError> {
-    let mut executed: Vec<i32> = Vec::new();
-
-    if let Ok(lines) = crate::io::lines(path) {
-        let mut idx: i32 = 0;
-        let mut acc: i32 = 0;
-        let mut line;
-        while idx < lines.len() as i32 {
-            line = lines[idx as usize].as_str();
-            if executed.contains(&idx) {
-                println!("error: repeated instruction {} at ln {}", line, idx);
+    if let Ok(mut lines) = crate::io::lines(path) {
+        //let mut lines = content.split("\n").collect::<Vec<String>>();
+        // we expect this to fail
+        let _ = compile(&lines);
+        // get all the possible jmps and nops
+        let suspects = get_instructions(&lines, vec![String::from("jmp"), String::from("nop")]);
+        for (num, instr) in suspects {
+            let orig = instr.to_string();
+            let flipped = flip(orig.to_string());
+            println!("trying flipping ln {} to {}", num, flipped);
+            lines[num] = flipped;
+            let success = compile(&lines);
+            // if succeeded, end the loop, otherwise revert the line to original value
+            if success {
                 break;
             }
-            executed.push(idx);
-            let inst: &str = line.split(" ").collect::<Vec<&str>>()[0];
-            let para: &str = line.split(" ").collect::<Vec<&str>>()[1];
-            print!("ln {}: ", idx);
-            match inst {
-                "acc" => {
-                    println!("acc, altering acc by {}", para);
-                    acc += para.parse::<i32>().unwrap();
-                    idx += 1;
-                }
-                "jmp" => {
-                    println!("jmp, jumping {} lines", para);
-                    idx += para.parse::<i32>().unwrap();
-                }
-                _ => {
-                    println!("nop, moving to next line");
-                    idx += 1;
-                }
-            }
+            lines[num] = orig;
         }
-        dbg!(acc);
     }
 
     Ok(())
+}
+
+fn get_instructions(lines: &Vec<String>, matches: Vec<String>) -> HashMap<usize, String> {
+    let mut results: HashMap<usize, String> = HashMap::new();
+
+    for (num, line) in lines.iter().enumerate() {
+        let instr = line.chars().take(3).collect::<String>();
+        if matches.contains(&instr) {
+            results.insert(num, line.to_string());
+        }
+    }
+
+    results
+}
+
+fn flip(line: String) -> String {
+    let (instr, param) = split(line);
+    match instr.as_str() {
+        "jmp" => {
+            return format!("nop {}", param);
+        }
+        "nop" => {
+            return format!("jmp {}", param);
+        }
+        _ => {
+            return format!("{} {}", instr, param);
+        }
+    }
+}
+
+fn split(line: String) -> (String, String) {
+    let instr: String = line.chars().take(3).collect();
+    let param: String = line.chars().skip(4).collect();
+
+    (instr, param)
+}
+
+fn compile(lines: &Vec<String>) -> bool {
+    let mut idx: usize = 0;
+    let mut acc: i32 = 0;
+    let mut line;
+    let mut executed: HashMap<usize, String> = HashMap::new();
+    while idx < lines.len() {
+        line = lines[idx].to_string();
+        if executed.contains_key(&idx) {
+            println!("error: repeated instruction {} at ln {}", line, idx);
+            break;
+        }
+        executed.insert(idx, line.to_string());
+        let (instr, param) = split(line);
+        match instr.as_str() {
+            "acc" => {
+                acc += param.parse::<i32>().unwrap();
+                idx += 1;
+            }
+            "jmp" => {
+                // param can be negative, so we need it signed. One extra
+                // variable to make it readable
+                let idx32 = idx as i32 + param.parse::<i32>().unwrap();
+                // it yields an unsigned in the end
+                idx = idx32 as usize;
+            }
+            _ => {
+                idx += 1;
+            }
+        }
+    }
+    dbg!(acc);
+
+    idx == lines.len()
 }
